@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="app/assets/queryn-logo.png" alt="Queryn logo" width="120">
+</p>
+
 # Queryn
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
