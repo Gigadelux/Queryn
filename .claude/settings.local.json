@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(A)",
+      "WebSearch",
+      "Bash(python3 *)",
+      "Bash(python -c \"import polars as pl; print\\(pl.__version__\\)\")",
+      "mcp__obsidian__read_note",
+      "mcp__obsidian__get_vault_info",
+      "mcp__obsidian__search",
+      "mcp__obsidian__search_with_context"
+    ]
+  }
+}
