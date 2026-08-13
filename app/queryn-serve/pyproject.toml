@@ -1,0 +1,13 @@
+[project]
+name = "queryn-serve"
+version = "0.1.0"
+description = "Queryn FastAPI backend"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+    "fastapi[standard]>=0.115.0",
+    "pyinstaller>=6.10.0",
+    "colorama>=0.4.6",
+]
+
+[tool.uv]
+package = false

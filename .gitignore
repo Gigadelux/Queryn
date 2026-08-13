@@ -3,3 +3,6 @@ Adapters/data/
 Adapters/models/
 queryn_summary.md
 .claude
+.gitignore
+.venv/
+.DS_Store

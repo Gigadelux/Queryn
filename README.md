@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="app/assets/queryn-logo.png" alt="Queryn logo" width="120">
+  <img src="app/queryn-app/src/assets/queryn-logo.png" alt="Queryn logo" width="120">
 </p>
 
 # Queryn
