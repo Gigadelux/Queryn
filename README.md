@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="app/queryn-app/src/assets/queryn-logo.png" alt="Queryn logo" width="120">
+  <img src="app/assets/queryn-logo.png" alt="Queryn logo" width="120">
 </p>
 
 # Queryn
@@ -50,6 +50,9 @@ There are **multiple versions of both the training pipeline and the mapper archi
 | `pipelines/v0_adapter_model_training.py` | v0 mapper training — 56 pairs, `DeepModel` only |
 | `pipelines/v1_adapter_model_training.py` | v1 mapper training — 49 pairs, linear vs. deep per pair, best kept |
 | `v0_result_analysis.py` / `v1_adapter_analysis.py` | Plot and compare per-pair training results |
+| `ptConverter.py` | Convert trained `.pt` adapters to ONNX + safetensors for distribution |
+| `hf_upload.py` | Publish the ONNX adapters to the Hugging Face Hub (one repo per pair + a collection) |
+| `kaggle_upload.py` | Package `data/` into a two-folder (`text/` + `embeddings/`) Kaggle dataset |
 | `data/unified_dataset.parquet` | 349,674-row corpus, all domains |
 | `data/embeddings/` | Batch shards, per-model parquet files, final wide table |
 
@@ -66,11 +69,33 @@ There are **multiple versions of both the training pipeline and the mapper archi
 | Crypto/markets news | 5,176 | `finance` |
 | **Total** | **349,674** | |
 
+#### Source datasets
+
+The five raw corpora are public Kaggle datasets, each under its own license. The bundled corpus keeps every component under its original terms — see the `LICENSE` file in the [Kaggle upload](#kaggle-upload) for the full manifest.
+
+- **arXiv abstracts** — [arXiv Scientific Research Papers Dataset](https://www.kaggle.com/datasets/sumitm004/arxiv-scientific-research-papers-dataset) · Apache 2.0 · _Sumit Mishra_ (upstream arXiv metadata is CC0 1.0)
+- **Australian case law** — [Legal Text Classification Dataset](https://www.kaggle.com/datasets/amohankumar/legal-text-classification-dataset) · Apache 2.0 · _A. Mohan Kumar_ (orig. F. Galgani, UNSW — AustLII Federal Court judgments 2006–2009; also mirrored as [`shivamb/legal-citation-text-classification`](https://www.kaggle.com/datasets/shivamb/legal-citation-text-classification), CC0)
+- **SQuAD passages** — [Question Answering Dataset (SQuAD, CSV)](https://www.kaggle.com/datasets/ananthu017/squad-csv-format) · tagged CC0 on Kaggle, **CC BY-SA 4.0 upstream** · _Rajpurkar et al., 2016_
+- **PubMed abstracts** — [PubMed 200k RCT](https://www.kaggle.com/datasets/matthewjansen/pubmed-200k-rtc) · CC0 · _Dernoncourt & Lee, 2017_ (PubMed/MEDLINE abstracts)
+- **Financial/markets news** — [Financial News Sentiment vs Market 2020–Present](https://www.kaggle.com/datasets/belbino/financial-news-sentiment-vs-market-2020-present) (`news_sentiment_raw.csv`) · CC0 · _Belbin Beno R M_ (frequently refreshed; `fintext.csv` is a point-in-time export)
+
 Output columns: `ID · UUID · TEXT · TOPIC · DOMAIN · SOURCE_FILE · WORD_COUNT · CHAR_COUNT · TOKEN_COUNT · HAS_CODE · HAS_URL · HAS_IDENTIFIERS · RETRIEVAL_HINT · TEXT_QUALITY`
 
 - `ID` — integer 0…N-1, stable primary key for all embedding joins
 - `TOKEN_COUNT` — tiktoken `cl100k_base`, used to estimate per-batch token budgets
 - `RETRIEVAL_HINT` — Layer 1 signal: `"BM25"` (24% of corpus) or `"vector"` (76%)
+
+### Kaggle upload
+
+`kaggle_upload.py` packages `data/` into a single Kaggle dataset with two top-level folders — `text/` (the five raw source corpora above) and `embeddings/` (per-model embedding parquets + the joined `embeddings.parquet`) — and generates the dataset `README.md`, a per-source `LICENSE` manifest, and `dataset-metadata.json`. The staging tree is hard-linked, so it costs no extra disk.
+
+```bash
+cd Adapters/
+python kaggle_upload.py --id <user>/queryn-corpus-and-embeddings --project-url <repo-url>   # dry run
+python kaggle_upload.py --id <user>/queryn-corpus-and-embeddings --push                      # publish
+```
+
+The compilation is tagged `other` because the components carry different licenses (Apache 2.0 and CC0); each keeps its own terms. Note that the SQuAD CSV is tagged CC0 on Kaggle but the upstream SQuAD release is CC BY-SA 4.0.
 
 ### Architectures
 

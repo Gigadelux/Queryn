@@ -2,7 +2,9 @@ Adapters/data/
 .env
 Adapters/models/
 queryn_summary.md
+docs/engine-design-decisions.md
 .claude
 .gitignore
 .venv/
 .DS_Store
+__pycache__/
