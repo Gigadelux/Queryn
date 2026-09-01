@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Adapters · Queryn{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <div>
+    <h1>Adapter catalog</h1>
+    <p class="sub">
+      Manifest <span class="mono">{{ meta.version }}</span> ·
+      {{ stats.count }} directed pairs · opset {{ meta.onnx_opset }} ·
+      loaded from {{ source_label }}
+    </p>
+  </div>
+  <div class="stat-chips">
+    <span class="chip"><b>{{ stats.mean_cos }}</b> mean cos</span>
+    <span class="chip"><b>{{ stats.linear }}</b> linear</span>
+    <span class="chip"><b>{{ stats.deep }}</b> deep</span>
+  </div>
+</header>
+
+<section class="panel">
+  <div class="table-wrap">
+    <table class="jobs adapters-table">
+      <thead>
+        <tr>
+          <th>Pair</th><th>Source</th><th>Target</th>
+          <th class="num">dims</th><th>arch</th>
+          <th>held-out cosine</th><th class="num">cos</th>
+        </tr>
+      </thead>
+      {% include "_adapters_table.html" %}
+    </table>
+  </div>
+</section>
+{% endblock %}

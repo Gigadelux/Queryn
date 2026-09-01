@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Providers · Queryn{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <div>
+    <h1>Providers</h1>
+    <p class="sub">
+      Bring-your-own-key endpoints. Config is written to
+      <span class="mono">{{ path }}</span>; API keys are read from the environment
+      and never stored here.
+    </p>
+  </div>
+  {% if missing %}<span class="chip chip-warn"><b>{{ missing }}</b> keys missing</span>{% endif %}
+</header>
+
+<section class="panel">
+  <form hx-post="/providers" hx-target="#providers-table" hx-swap="outerHTML">
+    {% include "_providers_table.html" %}
+    <div class="form-foot">
+      <button type="submit" class="btn btn-primary">Save config</button>
+      <span class="faint sm">Editable: base URL and key env var. Model and dim are fixed per pipeline.</span>
+    </div>
+  </form>
+</section>
+{% endblock %}

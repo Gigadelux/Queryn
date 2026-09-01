@@ -1,0 +1,39 @@
+<div id="providers-table">
+  {% if saved %}<p class="alert alert-ok">Saved to providers.yaml.</p>{% endif %}
+  <div class="table-wrap">
+    <table class="jobs providers-table">
+      <thead>
+        <tr>
+          <th>Model</th><th>Base URL</th><th>Key env var</th>
+          <th>Key</th><th class="num">dim</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in providers %}
+        <tr>
+          <td class="mono">{{ p.name }}</td>
+          <td>
+            <input class="cell-input mono" name="{{ p.name }}.base_url" value="{{ p.base_url }}"
+                   {{ 'readonly' if p.local }}>
+          </td>
+          <td>
+            <input class="cell-input mono" name="{{ p.name }}.api_key_env"
+                   value="{{ p.api_key_env if p.api_key_env != '—' else '' }}"
+                   placeholder="—" {{ 'readonly' if p.local }}>
+          </td>
+          <td>
+            {% if p.local %}
+              <span class="badge badge-arch-linear">local</span>
+            {% elif p.key_present %}
+              <span class="badge badge-done">present</span>
+            {% else %}
+              <span class="badge badge-failed">missing</span>
+            {% endif %}
+          </td>
+          <td class="num mono faint">{{ p.dim }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>

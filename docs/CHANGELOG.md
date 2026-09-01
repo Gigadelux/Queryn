@@ -49,11 +49,32 @@ a team working note (`docs/engine-design-decisions.md`, not committed).
     trained and compared per pair with the winner kept, best-epoch checkpointing,
     cosine-similarity loss with LR scheduling.
 
+### Engine boilerplate (`app/`)
+
+- **Architecture scaffold done** — real module boundaries and state layer, with
+  mock implementations for the parts that touch a customer's infrastructure, so
+  the engine runs end-to-end as a demo (`uv run uvicorn main:app`).
+- Layout follows the planned convention: `core/` (domain types + persistence),
+  `core/connectors/` + `core/adapters/` (`Protocol` + a mock impl each),
+  `services/migrator.py` (serial job runner), `controllers/`, `endpoints/v1/`
+  (FastAPI routers), `helpers/`, plus `templates/` + `static/`.
+- State split wired up for real: **SQLite** job registry (`queryn.db`, WAL),
+  append-only **`progress.jsonl`** per job, atomic **`checkpoint.json`**,
+  **`providers.yaml`** (key status from env, never the value). Interrupt →
+  resume-from-checkpoint verified.
+- Dashboard: FastAPI + Jinja2 + HTMX, no build step — job list, live progress
+  panel (self-terminating poll), adapter catalog (reads the real
+  `manifest.json`), BYOK providers page. Vendored htmx / Alpine / fonts.
+- Docs: [`architecture.md`](architecture.md) (whole-project) and
+  [`engine-endpoints.md`](engine-endpoints.md) (every route).
+- Still mock / not built: real vector-store connectors, real `onnxruntime`
+  inference, the `queryn` CLI, the Dockerfile.
+
 ### Repo
 
-- **Tauri desktop shell removed.** `app/` is now a FastAPI scaffold plus a
-  PyInstaller config; the engine is being built as a CLI + optional web
-  dashboard, Docker-first (see roadmap).
+- **Tauri desktop shell removed.** `app/` is now the engine boilerplate above
+  (FastAPI + serial runner); the PyInstaller config is gone. The engine is a CLI
+  + optional web dashboard, Docker-first (see roadmap).
 - Project open-sourced under Apache 2.0.
 
 ---

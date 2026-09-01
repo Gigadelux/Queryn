@@ -3,8 +3,16 @@ Adapters/data/
 Adapters/models/
 queryn_summary.md
 docs/engine-design-decisions.md
+docs/hf-org-card.md
 .claude
 .gitignore
 .venv/
 .DS_Store
 __pycache__/
+
+# engine runtime state (regenerated on boot)
+app/data/queryn.db
+app/data/queryn.db-wal
+app/data/queryn.db-shm
+app/data/jobs/
+app/data/providers.yaml

@@ -1,0 +1,19 @@
+<div id="preview" class="preview {{ 'preview-ok' if preview.has_adapter else 'preview-warn' }}">
+  {% if preview.has_adapter %}
+  <p class="preview-head">
+    <span class="mono">{{ preview.pair_id }}</span>
+    <span class="badge badge-done">cos {{ preview.adapter_cos }}</span>
+  </p>
+  {% else %}
+  <p class="preview-head">
+    <span class="mono">{{ preview.pair_id }}</span>
+    <span class="badge badge-failed">no adapter · re-embed</span>
+  </p>
+  {% endif %}
+  <ul class="preview-facts mono">
+    <li>dims <b>{{ preview.in_dim }} &rarr; {{ preview.out_dim }}</b></li>
+    <li>batches <b>{{ preview.requests }}</b></li>
+    <li>eta <b>{{ preview.eta }}</b></li>
+    <li>cost <b>{{ preview.adapter_cost }}</b> <s>{{ preview.reembed_cost }}</s></li>
+  </ul>
+</div>

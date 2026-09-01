@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Queryn Engine{% endblock %}</title>
+  <link rel="icon" type="image/png" href="{{ url_for('static', path='favicon.png') }}">
+  <link rel="stylesheet" href="{{ url_for('static', path='queryn.css') }}">
+  <script src="{{ url_for('static', path='vendor/htmx.min.js') }}" defer></script>
+  <script src="{{ url_for('static', path='vendor/alpine.min.js') }}" defer></script>
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <a class="brand" href="/">
+      <img src="{{ url_for('static', path='queryn-logo.png') }}" alt="" width="26" height="26">
+      <span>Queryn</span>
+      <em>engine</em>
+    </a>
+    <nav>
+      <a href="/" class="{{ 'is-active' if nav == 'migrations' }}">
+        <span class="dot"></span> Migrations
+      </a>
+      <a href="/adapters" class="{{ 'is-active' if nav == 'adapters' }}">
+        <span class="dot"></span> Adapters
+      </a>
+      <a href="/providers" class="{{ 'is-active' if nav == 'providers' }}">
+        <span class="dot"></span> Providers
+      </a>
+    </nav>
+    <div class="sidebar-foot">
+      <span class="mono">v{{ app_version }}</span>
+      <span class="tag">demo data</span>
+    </div>
+  </aside>
+
+  <main class="content">
+    {% block content %}{% endblock %}
+  </main>
+</div>
+</body>
+</html>

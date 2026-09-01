@@ -1,0 +1,23 @@
+<tbody{% if any_active %} hx-get="/jobs/_rows" hx-trigger="every 3s" hx-swap="outerHTML"{% endif %}>
+  {% for j in jobs %}
+  <tr class="row-status-{{ j.status }}" onclick="location.href='/jobs/{{ j.id }}'">
+    <td>
+      <span class="mono jid">{{ j.id }}</span>
+      <span class="badge badge-{{ j.status }}">{{ j.status }}</span>
+    </td>
+    <td class="mono nowrap">{{ j.source }} <span class="arrow">&rsaquo;</span> {{ j.target }}</td>
+    <td class="mono faint">{{ j.adapter }}</td>
+    <td>
+      <div class="minibar" title="{{ j.rows_done }} / {{ j.rows_total }}">
+        <span style="width: {{ j.pct }}%"></span>
+      </div>
+      <span class="faint mono sm">{{ j.phase }} · {{ j.pct }}%</span>
+    </td>
+    <td class="num mono">{{ j.cost }}</td>
+    <td class="num mono">{{ j.cos }}</td>
+    <td class="num mono faint">{{ j.duration }}</td>
+  </tr>
+  {% else %}
+  <tr><td colspan="7" class="empty">No migrations yet. Queue one on the right.</td></tr>
+  {% endfor %}
+</tbody>

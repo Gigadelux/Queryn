@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}{{ job.id }} · Queryn{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <div>
+    <a class="back" href="/">&lsaquo; Migrations</a>
+    <h1 class="mono">{{ job.id }}</h1>
+    <p class="sub mono">
+      {{ job.source_model }} <span class="arrow">&rsaquo;</span> {{ job.target_model }}
+      · {{ row.rows_total }} rows
+      · <span class="badge badge-{{ job.status.value }}">{{ job.status.value }}</span>
+    </p>
+  </div>
+  <div class="actions">
+    {% if can_cancel %}
+    <form method="post" action="/jobs/{{ job.id }}/cancel"><button class="btn">Cancel</button></form>
+    {% endif %}
+    {% if can_resume %}
+    <form method="post" action="/jobs/{{ job.id }}/resume"><button class="btn btn-primary">Resume</button></form>
+    {% endif %}
+  </div>
+</header>
+
+{% if job.error %}<div class="alert alert-err mono">{{ job.error }}</div>{% endif %}
+
+{% with p = progress %}{% include "_progress.html" %}{% endwith %}
+
+<div class="cards">
+  <section class="panel card">
+    <div class="panel-head"><h2>Adapter</h2></div>
+    {% if adapter %}
+    <dl class="kv">
+      <dt>pair</dt><dd class="mono">{{ adapter.pair_id }}</dd>
+      <dt>architecture</dt><dd class="mono">{{ adapter.architecture }}</dd>
+      <dt>dims</dt><dd class="mono">{{ adapter.in_dim }} &rarr; {{ adapter.out_dim }}</dd>
+      <dt>held-out cos</dt><dd class="mono">{{ "%.4f"|format(adapter.best_test_cos) }}</dd>
+      <dt>source</dt><dd class="mono">{{ adapter.source }}</dd>
+    </dl>
+    {% else %}
+    <p class="faint">No trained adapter for this pair — this job would fall back to
+    re-embedding through the target provider.</p>
+    {% endif %}
+  </section>
+
+  <section class="panel card">
+    <div class="panel-head"><h2>Estimate</h2></div>
+    <dl class="kv">
+      <dt>read</dt><dd class="mono">{{ est_view.read }}</dd>
+      <dt>write</dt><dd class="mono">{{ est_view.write }}</dd>
+      <dt>batches</dt><dd class="mono">{{ est_view.requests }}</dd>
+      <dt>adapter path</dt><dd class="mono">{{ est_view.adapter_cost }}</dd>
+      <dt>re-embed instead</dt><dd class="mono strike-alt">{{ est_view.reembed_cost }}</dd>
+    </dl>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+<div id="progress" class="progress-card status-{{ p.status }}"
+     {% if p.polling %}hx-get="/jobs/{{ p.job_id }}/progress" hx-trigger="every 2s" hx-swap="outerHTML"{% endif %}>
+
+  <ol class="phases">
+    {% for s in p.phase_steps %}
+    <li class="phase phase-{{ s.state }}">
+      <span class="phase-mark"></span>{{ s.name }}
+    </li>
+    {% endfor %}
+  </ol>
+
+  <div class="bar">
+    <span style="width: {{ p.pct }}%"></span>
+    <b>{{ p.pct }}%</b>
+  </div>
+
+  <div class="stat-grid">
+    <div><span class="k">rows</span><span class="v mono">{{ p.rows_done }} / {{ p.rows_total }}</span></div>
+    <div><span class="k">throughput</span><span class="v mono">{{ p.rate }}</span></div>
+    <div><span class="k">eta</span><span class="v mono">{{ p.eta }}</span></div>
+    <div><span class="k">cost</span><span class="v mono">{{ p.cost }}</span></div>
+    <div><span class="k">sampled cos</span><span class="v mono">{{ p.cos }}</span></div>
+    <div><span class="k">phase</span><span class="v mono">{{ p.phase }}</span></div>
+  </div>
+
+  <figure class="spark-wrap">
+    {{ p.sparkline | safe }}
+    <figcaption>{{ p.spark_label }}</figcaption>
+  </figure>
+
+  {% if p.message %}<p class="progress-msg mono">{{ p.message }}</p>{% endif %}
+
+  <details class="log" {{ 'open' if p.polling }}>
+    <summary>event feed</summary>
+    <ul>
+      {% for e in p.log %}
+      <li><span class="mono faint">{{ e.ts }}</span> <span class="badge badge-sm">{{ e.phase }}</span> {{ e.msg }}</li>
+      {% endfor %}
+    </ul>
+  </details>
+</div>

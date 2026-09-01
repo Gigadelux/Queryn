@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Migrations · Queryn{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <div>
+    <h1>Migrations</h1>
+    <p class="sub">Translate a vector store from one embedding model's space into another's.</p>
+  </div>
+  <div class="stat-chips">
+    <span class="chip"><b>{{ counts.running }}</b> running</span>
+    <span class="chip"><b>{{ counts.queued }}</b> queued</span>
+    <span class="chip"><b>{{ counts.done }}</b> done</span>
+    <span class="chip {{ 'chip-warn' if counts.failed }}"><b>{{ counts.failed }}</b> failed</span>
+  </div>
+</header>
+
+<div class="split">
+  <section class="panel">
+    <div class="panel-head"><h2>Jobs</h2></div>
+    <div class="table-wrap">
+      <table class="jobs">
+        <thead>
+          <tr>
+            <th>Job</th><th>Pair</th><th>Adapter</th><th>Progress</th>
+            <th class="num">Cost</th><th class="num">cos</th><th class="num">Time</th>
+          </tr>
+        </thead>
+        {% include "_job_rows.html" %}
+      </table>
+    </div>
+  </section>
+
+  <aside class="panel new-migration">
+    <div class="panel-head"><h2>New migration</h2></div>
+    <form method="post" action="/jobs" class="form"
+          x-data="{ sent: false }" @submit="sent = true">
+      <label>Source model
+        <select name="source_model"
+                hx-get="/adapters/_preview" hx-target="#preview" hx-include="closest form"
+                hx-trigger="change">
+          {% for m in models %}<option value="{{ m }}">{{ m }}</option>{% endfor %}
+        </select>
+      </label>
+      <label>Target model
+        <select name="target_model"
+                hx-get="/adapters/_preview" hx-target="#preview" hx-include="closest form"
+                hx-trigger="change">
+          {% for m in models %}<option value="{{ m }}" {{ 'selected' if m == 'bge-m3' }}>{{ m }}</option>{% endfor %}
+        </select>
+      </label>
+      <label>Rows to migrate
+        <input type="number" name="rows" min="1" step="1000" value="240000"
+               hx-get="/adapters/_preview" hx-target="#preview" hx-include="closest form"
+               hx-trigger="change delay:300ms">
+      </label>
+
+      <div id="preview"
+           hx-get="/adapters/_preview?source_model=ada-002&target_model=bge-m3&rows=240000"
+           hx-trigger="load">
+      </div>
+
+      <button type="submit" class="btn btn-primary"
+              :disabled="sent" x-text="sent ? 'Queuing…' : 'Queue migration'">Queue migration</button>
+    </form>
+  </aside>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+<tbody>
+  {% for a in adapters %}
+  <tr>
+    <td class="mono">{{ a.pair_id }}</td>
+    <td class="mono">{{ a.source }}</td>
+    <td class="mono">{{ a.target }}</td>
+    <td class="num mono faint">{{ a.in_dim }}&rarr;{{ a.out_dim }}</td>
+    <td><span class="badge badge-arch-{{ a.arch }}">{{ a.arch }}</span></td>
+    <td>
+      <div class="minibar band-{{ a.band }}"><span style="width: {{ a.cos_pct }}%"></span></div>
+    </td>
+    <td class="num mono">{{ a.cos }}</td>
+  </tr>
+  {% endfor %}
+</tbody>

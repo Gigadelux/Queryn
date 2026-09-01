@@ -15,6 +15,9 @@ For every pair under ``models/exported/<version>/`` (produced by
    ``<namespace>/<prefix><src>_to_<tgt>`` and uploads the folder;
 3. adds that repo to a Hub *collection* (created on first run, reused after).
 
+Publishes to the ``QuerynAi`` org by default (see ``DEFAULT_NAMESPACE``); the
+token must have write access to that org. Override with ``--namespace``.
+
 PLOTS
 -----
 The training plots are per *source* model (``reports/<version>/plots/
@@ -33,7 +36,7 @@ USAGE
     python hf_upload.py --dry-run                    # stage everything, touch nothing
     python hf_upload.py                              # publish all v1 pairs
     python hf_upload.py --only ada-002_to_bge-m3
-    python hf_upload.py --namespace my-org --prefix emb-adapter-
+    python hf_upload.py --namespace my-user            # publish under your account instead
     python hf_upload.py --all-plots --project-url https://github.com/you/queryn
 
 DEPENDENCIES
@@ -63,13 +66,13 @@ log = logging.getLogger("hf_upload")
 IN_NAME = "source_embedding"
 OUT_NAME = "target_embedding"
 
+DEFAULT_NAMESPACE = "QuerynAi"          # HF org; override with --namespace
 DEFAULT_PREFIX = "queryn-adapter-"
 DEFAULT_COLLECTION_TITLE = "Queryn Embedding Adapters"
+# HF caps collection descriptions at 150 chars.
 COLLECTION_DESCRIPTION = (
-    "ONNX embedding-translation adapters from the Queryn pipeline. Each one "
-    "maps embeddings from a source model's space into a target model's space "
-    "without re-embedding the corpus — a shallow linear or 1-hidden-layer "
-    "MLP, L2-normalizing input and output internally."
+    "ONNX adapters that translate a chunk's embedding from one model's space "
+    "into another's, without re-embedding. From the Queryn pipeline."
 )
 CARD_TAGS = [
     "embedding",
@@ -294,8 +297,9 @@ def main() -> int:
                     help="defaults to <root>/models/exported/<version>")
     ap.add_argument("--plots-dir", type=Path, default=None,
                     help="defaults to <root>/reports/<version>/plots")
-    ap.add_argument("--namespace", default=None,
-                    help="HF user or org; defaults to the token's account")
+    ap.add_argument("--namespace", default=DEFAULT_NAMESPACE,
+                    help=f"HF user or org (default: {DEFAULT_NAMESPACE}); "
+                         "pass '' to fall back to the token's own account")
     ap.add_argument("--prefix", default=DEFAULT_PREFIX, help="repo-name prefix")
     ap.add_argument("--collection-title", default=DEFAULT_COLLECTION_TITLE)
     ap.add_argument("--no-collection", action="store_true",
@@ -376,7 +380,7 @@ def main() -> int:
             col = api.create_collection(
                 title=args.collection_title,
                 namespace=namespace,
-                description=COLLECTION_DESCRIPTION,
+                description=COLLECTION_DESCRIPTION[:150],  # HF hard limit
                 private=args.private,
                 exists_ok=True,
             )
